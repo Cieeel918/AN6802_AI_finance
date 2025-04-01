@@ -2,4 +2,5 @@ flask
 google
 google-generativeai
 gunicorn
+pysqlite3
 
