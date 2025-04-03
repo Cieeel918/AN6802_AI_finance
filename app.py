@@ -1,8 +1,15 @@
 from flask import Flask, request, render_template
 import sqlite3
 import datetime
+import google.generativeai as genai
+import os
+
+api='AIzaSyDjtmA1IGXdw6YrGZp_dEFUYDzfLCAbDPQ'
+model=genai.GenerativeModel("gemini-1.5-flash")
+genai.configure(api_key=api)
 
 app = Flask(__name__)
+flag=1
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -10,17 +17,19 @@ def index():
 
 @app.route("/main",methods=["GET","POST"])
 def main():
-    user_name=request.form.get("q")
-    t=datetime.datetime.now()
-    conn=sqlite3.connect('user.db')
-    c=conn.cursor()
-    c.execute('insert into user values(?,?)',(user_name,t))
-    # 使用占位符 ? 向 user 表插入一行数据。
-    # 变量 name 和 t 应该是你预先定义好的数据
-    conn.commit() #提交事务，保存插入的数据。
-    c.close()
-    conn.close()
-
+    global flag
+    if flag ==1 :
+        user_name=request.form.get("q")
+        t=datetime.datetime.now()
+        conn=sqlite3.connect('user.db')
+        c=conn.cursor()
+        c.execute('insert into user values(?,?)',(user_name,t))
+        # 使用占位符 ? 向 user 表插入一行数据。
+        # 变量 name 和 t 应该是你预先定义好的数据
+        conn.commit() #提交事务，保存插入的数据。
+        c.close()
+        conn.close()
+        flag=0
     return(render_template('main.html'))
 
 @app.route("/foodexp", methods=['GET', 'POST']) 
@@ -44,6 +53,15 @@ def ethical_result():
     elif answer == "true":
         return(render_template("fail.html"))
 
+@app.route("/FAQ1", methods=['GET', 'POST']) 
+def FAQ1():
+    r=model.generate_content("Factors for profit")
+    return(render_template('FAQ1.html',r=r.candidates[0].content.parts[0]))
+
+@app.route("/FAQ", methods=['GET', 'POST']) 
+def FAQ():
+    return(render_template('FAQ.html'))
+
 @app.route("/userlog", methods=['GET', 'POST']) 
 def userlog():
     #从 user 表中查询所有数据，然后一边打印每一行，一边把它们拼接成一个字符串 r。
@@ -59,6 +77,20 @@ def userlog():
     c.close()
     conn.close()
     return(render_template('userlog.html',r=r))
+
+@app.route("/deleteLog", methods=['GET', 'POST']) 
+def deletelog():
+
+    conn = sqlite3.connect('user.db')
+    c = conn.cursor()
+
+    c.execute('delete from user')
+    conn.commit()
+
+    c.close()
+    conn.close()
+
+    return(render_template('deletelog.html'))
 
 if __name__=='__main__':
     app.run()
