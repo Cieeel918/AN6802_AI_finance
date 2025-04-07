@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+    <title>Main</title>
 </head>
 <body>
     <div class="container">
-        <h2> Welcome to Main Menu</h2>
-        <form action="/FAQ1" method="post">
-            <input type="submit" value="Factors for profit"> 
+        <h2>Welcome to Main Menu</h2>
+        <p>Gemini</p>
+        <form action="/FAQ1" method="POST">
+            <input type="submit" value="Factors for Profit">
         </form>
-        <form action="/FAQinput" method="post">
-            <input type="text"  name="q"> <br>
-            <input type="submit" value="Enter"> 
+        <p>Or input your questions - Wikipedia</p>
+        <form action="/FAQinput" method="POST">
+            <input type="text" name="q"><br>
+            <input type="submit" value="Enter">
         </form>
         <form action="/main" method="POST">
-            <input type="submit" value="Main"> 
+            <input type="submit" value="Main">
         </form>
     </div>
 </body>
 </html>
-

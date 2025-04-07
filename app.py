@@ -3,6 +3,7 @@ import sqlite3
 import datetime
 import google.generativeai as genai
 import os
+import wikipedia
 
 api='AIzaSyDjtmA1IGXdw6YrGZp_dEFUYDzfLCAbDPQ'
 model=genai.GenerativeModel("gemini-1.5-flash")
@@ -36,6 +37,14 @@ def main():
 def foodexp():
     return(render_template('foodexp.html'))
 
+@app.route("/foodexp1",methods=["POST","GET"])
+def foodexp1():
+    return(render_template("foodexp1.html"))
+
+@app.route("/foodexp2",methods=["POST","GET"])
+def foodexp2():
+    return(render_template("foodexp2.html"))
+
 @app.route("/foodexp_pred",methods=["POST","GET"])
 def foodexp_pred():
     q = float(request.form.get("q"))
@@ -62,6 +71,12 @@ def FAQ1():
 def FAQ():
     return(render_template('FAQ.html'))
 
+@app.route("/FAQinput",methods=["POST","GET"])
+def FAQinput():
+    q  = request.form.get("q")
+    r=wikipedia.summary(q)
+    return(render_template("FAQinput.html",r=r))
+
 @app.route("/userlog", methods=['GET', 'POST']) 
 def userlog():
     #从 user 表中查询所有数据，然后一边打印每一行，一边把它们拼接成一个字符串 r。
@@ -80,16 +95,12 @@ def userlog():
 
 @app.route("/deleteLog", methods=['GET', 'POST']) 
 def deletelog():
-
     conn = sqlite3.connect('user.db')
     c = conn.cursor()
-
     c.execute('delete from user')
     conn.commit()
-
     c.close()
     conn.close()
-
     return(render_template('deletelog.html'))
 
 if __name__=='__main__':
